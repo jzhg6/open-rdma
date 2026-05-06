@@ -136,7 +136,7 @@
 
 ### [open-rdma-operation-manual](./open-rdma-operation-manual/)
 
-[![GitHub stars](https://img.shields.io/github/stars/open-rdma/open-rdma-driver?style=social)](./open-rdma-operation-manual)
+[![GitHub stars](https://img.shields.io/github/stars/jzhg6/open-rdma?style=social)](https://github.com/jzhg6/open-rdma)
 
 open-rdma项目的入门操作手册。
 
