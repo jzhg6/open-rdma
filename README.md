@@ -134,6 +134,15 @@ All materials publicly available with introductory guides, helping more newcomer
 <tr>
 <td width="33%" align="center" valign="top">
 
+### [open-rdma-operation-manual](./open-rdma-operation-manual/)
+
+[![GitHub stars](https://img.shields.io/github/stars/open-rdma/open-rdma-driver?style=social)](./open-rdma-operation-manual)
+
+The introductory operation manual for the open-rdma project.
+
+</td>
+<td width="33%" align="center" valign="top">
+
 ### [open-rdma-rtl](https://github.com/open-rdma/open-rdma-rtl)
 
 [![GitHub stars](https://img.shields.io/github/stars/open-rdma/open-rdma-rtl?style=social)](https://github.com/open-rdma/open-rdma-rtl)

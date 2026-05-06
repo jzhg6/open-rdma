@@ -8,9 +8,7 @@ linux系统进入backend目录执行
 make verilog
 ```
 
-可以看到编译后所创建的`build`和`verilog`两个文件夹：
-
-![2026-04-26_14-32](compile-and-program-guide_CN.assets/2026-04-26_14-32.png)
+可以看到编译后所创建的`build`和`verilog`两个文件夹。
 
 ## 启动后端综合工具综合
 
@@ -20,51 +18,29 @@ make verilog
 make quartus
 ```
 
-创建了一个带有时间戳的工作目录：
-
-![2026-04-26_14-30](compile-and-program-guide_CN.assets/2026-04-26_14-30.png)
+创建了一个带有时间戳的工作目录。
 
 打开该工作目录，`output_files` 存放 .sof 文件用于后续工程烧录，`sdc_snapshot_dir` 存放 sdc 时序约束文件的快照版本，`verilog_snapshot_dir`存放 verilog 源文件的快照版本，`mkBsvTop.qpf` 为工程文件，`rev1.qsf` 为设置文件。
 
-![2026-04-26_20-57](compile-and-program-guide_CN.assets/2026-04-26_20-57.png)
-
 ## 下载程序到FPGA板卡
 
-打开 Quartus 软件，左上角 File-Open Project 打开工程，在带有时间戳的工作目录（`quartus_workdir_时间戳`）下打开 `mkBsvTop.qpf` 工程：
+打开 Quartus 软件，左上角 File-Open Project 打开工程，在带有时间戳的工作目录（`quartus_workdir_时间戳`）下打开 `mkBsvTop.qpf` 工程。
 
-![2026-04-26_20-43](compile-and-program-guide_CN.assets/2026-04-26_20-43.png)
+我们所执行的上述两条指令实际上就是执行了 Compilation Flow 下的操作。
 
-打开后如下图所示，我们所执行的上述两条指令实际上就是执行了图中 Compilation Flow 下的操作：
+工程上方Tools工具栏打开Programmer。
 
-![2026-04-26_20-45](compile-and-program-guide_CN.assets/2026-04-26_20-45.png)
+点击左上角Hardware Setup。
 
-上方Tools工具栏打开Programmer：
+选择USB-Blaster，若USB-Blaster配置有问题，去掉自动探测频率的复选框（`Auto-adjust frequency at chain scanning`），用已知可行的固定时钟调试。（自动探测频率会尝试读取器件支持的最高理论频率，它默认PCB走线完美、线缆极短且屏蔽良好；但真实开发场景下无法达到理想状态，因此往往强制指定一个保守频率，牺牲少量下载速度，换取极高稳定性。）
 
-![Screenshot from 2026-04-26 20-46-01](compile-and-program-guide_CN.assets/Screenshot from 2026-04-26 20-46-01.png)
-
-点击左上角Hardware Setup：
-
-![Screenshot from 2026-04-26 20-47-32](compile-and-program-guide_CN.assets/Screenshot from 2026-04-26 20-47-32.png)
-
-选择USB-Blaster，若USB-Blaster配置有问题，可去掉自动探测频率的复选框（`Auto-adjust frequency at chain scanning`），用已知可行的固定时钟调试。
-
-![2026-04-26_20-51](compile-and-program-guide_CN.assets/2026-04-26_20-51.png)
-
-关闭 Hardware Setup，点击Add File：
-
-![2026-04-26_20-48](compile-and-program-guide_CN.assets/2026-04-26_20-48.png)
+关闭 Hardware Setup，点击Add File。
 
 点击 output_files 文件夹
 
-![2026-04-26_20-48_1](compile-and-program-guide_CN.assets/2026-04-26_20-48_1.png)
+添加 .sof文件。
 
-添加 .sof文件：
-
-![2026-04-26_20-49](compile-and-program-guide_CN.assets/2026-04-26_20-49.png)
-
-勾选 `Program/Configure` ：
-
-![2026-04-26_20-50](compile-and-program-guide_CN.assets/2026-04-26_20-50.png)
+勾选 `Program/Configure` 。
 
 点击 Start，待右上角进度显示 100%(Successful) 后即烧录成功。
 

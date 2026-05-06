@@ -2,29 +2,17 @@
 
 ## 配置IP核，开启debug tool
 
-打开已综合好的后端工程，`quartus_workdir_时间戳`下的 `mkBsvTop.qpf` 工程，左侧 Project Navigator 窗口的右下角点击 IP Components：
+打开已综合好的后端工程，`quartus_workdir_时间戳`下的 `mkBsvTop.qpf` 工程，左侧 Project Navigator 窗口的右下角点击 IP Components。
 
-![image-20260427173021098](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427173021098.png)
+双击 `ftile_eth_hip` IP核。
 
-双击 `ftile_eth_hip` IP核：
+点击 close。
 
-![image-20260427173118830](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427173118830.png)
+下滑勾选 Enable debug endpoint for transceiver toolkit 与 Enable debug endpoint for Ethernet toolkit 两个复选框，为 收发器工具包 和 以太网工具包 启用 debug 调试端点。之后点击右下角 Generate HDL 按钮。
 
-点击 close：
+弹出界面中勾选如下两个复选框，之后点击 Generate。
 
-![image-20260427173249435](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427173249435.png)
-
-下滑勾选 Enable debug endpoint for transceiver toolkit 与 Enable debug endpoint for Ethernet toolkit 两个复选框，为 收发器工具包 和 以太网工具包 启用 debug 调试端点。之后点击右下角 Generate HDL 按钮：
-
-![image-20260427173652772](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427173652772.png)
-
-弹出界面中勾选如下两个复选框，之后点击 Generate：
-
-![image-20260427173823268](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427173823268.png)
-
-完成后点击 close，再关闭 IP核：
-
-![image-20260427173912191](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427173912191.png)
+完成后点击 close，再关闭 IP核。
 
 ## 重新编译，综合，烧录用于FTile调试的工程
 
@@ -38,29 +26,17 @@ make verilog
 make quartus
 ```
 
-打开 Quartus 软件，左上角 File - Open Project 打开工程，在新创建的带有时间戳的工作目录（`quartus_workdir_时间戳`）下打开 `mkBsvTop.qpf` 工程：
-
-![image-20260427174446088](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427174446088.png)
-
-![image-20260427174524281](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427174524281.png)
+打开 Quartus 软件，左上角 File - Open Project 打开工程，在新创建的带有时间戳的工作目录（`quartus_workdir_时间戳`）下打开 `mkBsvTop.qpf` 工程。
 
 上方Tools工具栏打开Programmer —— 点击左上角Hardware Setup —— 选择USB-Blaster（选择合适的时钟频率） —— 添加 .sof 文件 —— 勾选 `Program/Configure` —— 点击 Start，待右上角进度显示 100%(Successful) 即新综合的工程烧录成功。
-
-![image-20260427174938965](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427174938965.png)
 
 ## System Console 启动
 
 打开 System Console，点击上方 Tools —— System Debugging Tools —— System Console。System Console 本质是一个 JTAG 控制的寄存器读取仪表盘。
 
-![image-20260427175111158](FTile-Debug-and-SystemConsole-Guide_CN.assets/image-20260427175111158.png)
-
-双击 file_eth_hip_inst eth_f_tookit_1.0（以太网调试工具包），打开调试界面：
-
-![Snipaste_2026-04-27_17-11-14](FTile-Debug-and-SystemConsole-Guide_CN.assets/Snipaste_2026-04-27_17-11-14.png)
+双击 file_eth_hip_inst eth_f_tookit_1.0（以太网调试工具包），打开调试界面。
 
 ## FTile 以太网 Debug Toolkit 指标解析
-
-![Snipaste_2026-04-27_17-08-06](FTile-Debug-and-SystemConsole-Guide_CN.assets/Snipaste_2026-04-27_17-08-06.png)
 
 - **PCS Status（物理编码子层状态）**
   - **RX PCS Ready**：接受侧PCS层是否就绪。
@@ -78,11 +54,7 @@ make quartus
     - **TX PLL Locked**：发送通道的锁相环状态。
     - **RX CDR Locked**：接收通道的时钟数据恢复状态。
 
-![Snipaste_2026-04-27_17-09-04](FTile-Debug-and-SystemConsole-Guide_CN.assets/Snipaste_2026-04-27_17-09-04.png)
-
 - **MAC Configuration**：MAC层的配置寄存器和状态寄存器。
-
-![Snipaste_2026-04-27_17-10-30](FTile-Debug-and-SystemConsole-Guide_CN.assets/Snipaste_2026-04-27_17-10-30.png)
 
 - **AN.LT（Auto-Negotiation / Link Training）**：显示 IEEE 802.3 标准定义的以太网端口间自动协商和链路训练的状态与配置信息。
 

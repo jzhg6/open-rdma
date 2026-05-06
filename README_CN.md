@@ -106,6 +106,7 @@
 <td width="50%">
 
 ### 🌱 初学者友好
+
 公开全部资料，配有入门指导，助力更多小白成为RDMA专家
 
 </td>
@@ -131,6 +132,15 @@
 
 <table>
 <tr>
+<td width="33%" align="center" valign="top">
+
+### [open-rdma-operation-manual](./open-rdma-operation-manual/)
+
+[![GitHub stars](https://img.shields.io/github/stars/open-rdma/open-rdma-driver?style=social)](./open-rdma-operation-manual)
+
+open-rdma项目的入门操作手册。
+
+</td>
 <td width="33%" align="center" valign="top">
 
 ### [open-rdma-rtl](https://github.com/open-rdma/open-rdma-rtl)
