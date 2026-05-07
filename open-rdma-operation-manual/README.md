@@ -1,1 +1,0 @@
-[手册](https://jzhg6.github.io/open-rdma/)
