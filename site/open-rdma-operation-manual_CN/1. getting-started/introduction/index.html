@@ -1,0 +1,1960 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="open rdma">
+      
+      
+      
+      
+        <link rel="prev" href="../../../open-rdma-operation-manual_EN/3.%20ftile-debug-guide/FTile-Debug-and-SystemConsole-Guide_EN/">
+      
+      
+        <link rel="next" href="../rtl-simulation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Blue RDMA Rust 驱动介绍 - Open-RDMA-Operation-Manual</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#blue-rdma-rust-" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Open-RDMA-Operation-Manual" class="md-header__button md-logo" aria-label="Open-RDMA-Operation-Manual" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Open-RDMA-Operation-Manual
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Blue RDMA Rust 驱动介绍
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jzhg6/open-rdma/tree/docs/update-entry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jzhg6/open-rdma
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Open-RDMA-Operation-Manual" class="md-nav__button md-logo" aria-label="Open-RDMA-Operation-Manual" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Open-RDMA-Operation-Manual
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jzhg6/open-rdma/tree/docs/update-entry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jzhg6/open-rdma
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    英文手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    英文手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    getting-started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    getting-started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open-rdma-operation-manual_EN/1.%20getting-started/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open-rdma-operation-manual_EN/1.%20getting-started/rtl-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rtl-simulation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open-rdma-operation-manual_EN/1.%20getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open-rdma-operation-manual_EN/2.%20build-guide/compile-and-program-guide_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    build-guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open-rdma-operation-manual_EN/3.%20ftile-debug-guide/FTile-Debug-and-SystemConsole-Guide_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ftile-debug-guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中文手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中文手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速开始
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    快速开始
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blue RDMA Rust 驱动介绍
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blue RDMA Rust 驱动介绍
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概述
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        项目结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="项目结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心模块
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="核心模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verbs-rdma-verbs-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        verbs/ - RDMA Verbs API 层
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csr-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        csr/ - 控制与状态寄存器访问
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mem-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mem/ - 内存管理 （目前较为混乱）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workers-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        workers/ - 后台处理线程（核心业务逻辑）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ringbuf-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ringbuf/ - 环形缓冲区抽象
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        支持模块
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        运行模式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="运行模式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-features-hw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        硬件模式 (--features hw)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-features-sim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        仿真模式 (--features sim)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-features-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock 模式 (--features mock)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键架构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="关键架构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        环形缓冲区系统
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        内存管理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ffi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FFI 集成
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        组件架构与集成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="组件架构与集成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        架构概述
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        各组件职责
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="各组件职责">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-kernel-driver-bluerdmako" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. kernel-driver (bluerdma.ko)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-libibverbs-c-provider-rdma-core-550" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. libibverbs + C Provider (rdma-core-55.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-blue-rdma-provider-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Blue RDMA Provider (C 层桥接)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-rust-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. rust-driver (核心驱动)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整调用链路
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        初始化流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键设计特点
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rtl-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    仿真环境准备
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    驱动安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../2.%20build-guide/compile-and-program-guide_CN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    源码编译与烧录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../3.%20ftile-debug-guide/FTile-Debug-and-SystemConsole-Guide_CN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FTile 调试工程
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../4.%20signaltap/signaltap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signaltap 抓取信号
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Welcome
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    中文手册
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    快速开始
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="blue-rdma-rust-">Blue RDMA Rust 驱动 - 项目介绍</h1>
+<h2 id="_1">概述</h2>
+<p>rust-driver 是用 Rust 编写的核心 RDMA（远程直接内存访问）驱动实现。它作为高性能库通过 FFI（外部函数接口）与标准 libibverbs 框架集成，为 Blue RDMA 硬件提供基于 Rust 的 RDMA verbs 实现。</p>
+<p>该驱动支持三种运行模式以适应不同的开发场景：</p>
+<ul>
+<li><strong>硬件模式</strong> (<code>--features hw</code>)：使用物理 PCIe RDMA 设备</li>
+<li><strong>仿真模式</strong> (<code>--features sim</code>)：通过 UDP 和 TCP 通信使用 RTL 仿真器进行硬件仿真测试</li>
+<li><strong>Mock 模式</strong> (<code>--features mock</code>)：无需外部依赖的纯软件测试</li>
+</ul>
+<h2 id="_2">项目结构</h2>
+<h3 id="_3">核心模块</h3>
+<h4 id="verbs-rdma-verbs-api"><code>verbs/</code> - RDMA Verbs API 层</h4>
+<p>实现与 libibverbs 兼容的 RDMA verbs 接口：</p>
+<ul>
+<li><code>ffi.rs</code>：C ABI 导出函数，供 libibverbs 动态加载</li>
+<li><code>ctx.rs</code>：<code>HwDeviceCtx</code> - 核心设备上下文，管理 RDMA 操作</li>
+<li><code>dev.rs</code>：设备初始化（硬件模式使用 <code>PciHwDevice</code>，仿真模式使用 <code>EmulatedHwDevice</code>）</li>
+<li><code>mock.rs</code>：<code>MockDeviceCtx</code> - Mock 模式的设备上下文实现（与 <code>HwDeviceCtx</code> 同级）</li>
+</ul>
+<h4 id="csr-"><code>csr/</code> - 控制与状态寄存器访问</h4>
+<p>提供跨不同模式统一 CSR 访问的硬件抽象层：</p>
+<ul>
+<li><code>device_adaptor.rs</code>：核心 <code>DeviceAdaptor</code> trait，定义 CSR 读写接口</li>
+<li><code>ring_specs.rs</code>：各个硬件环形队列的规格定义（SendRing、CmdReqRing、MetaReportRing 等）</li>
+<li><code>hardware.rs</code>：硬件模式 CSR 访问实现，通过 <code>/dev/mem</code> 或 VFIO 进行 PCIe MMIO 访问</li>
+<li><code>emulated.rs</code>：仿真模式 CSR 访问实现，基于 UDP RPC 与 RTL 仿真器通信（端口 7701/7702）</li>
+<li><code>mode.rs</code>：设备运行模式配置（100G/200G/400G）</li>
+</ul>
+<p>泛型 <code>Ring&lt;Dev, Spec&gt;</code> 模式提供类型安全的环形缓冲区操作，具有编译时方向检查。</p>
+<h4 id="mem-"><code>mem/</code> - 内存管理 （目前较为混乱）</h4>
+<p>DMA 缓冲区分配和虚拟到物理地址转换：</p>
+<ul>
+<li><code>virt_to_phy.rs</code>：地址转换实现</li>
+<li><code>PhysAddrResolverLinuxX86</code>：硬件和仿真模式都使用 <code>/proc/self/pagemap</code> 来获取 MR（Memory Region）的物理地址</li>
+<li>注：仿真模式下，ringbuf 的"物理地址"直接使用虚拟地址假装，传递给仿真器</li>
+<li><code>pa_va_map.rs</code>：双向物理-虚拟地址映射，用于 sim 模式下仿真器访问主机内存</li>
+</ul>
+<p>支持 4KB 和 2MB 大页（默认：2MB 以获得最佳性能），但页面大小在编译时通过 features 固定，未来可能需要支持运行时配置</p>
+<h4 id="workers-"><code>workers/</code> - 后台处理线程（核心业务逻辑）</h4>
+<p>RDMA 操作的异步处理工作线程：</p>
+<ul>
+<li><code>completion.rs</code>：完成队列（CQ）事件处理，向应用层报告操作完成状态</li>
+<li><code>send/</code>：发送工作请求处理流水线，将 Send WR 转换为硬件描述符</li>
+<li><code>rdma.rs</code>：RDMA Read/Write/Atomic 操作的工作线程</li>
+<li><code>retransmit.rs</code>：数据包重传逻辑和超时处理</li>
+<li><code>ack_responder.rs</code>：ACK 数据包生成和响应处理</li>
+<li><code>qp_timeout.rs</code>：队列对（QP）超时管理</li>
+<li><code>meta_report/</code>：元数据报告处理，从硬件提取 BTH/RETH 包头信息</li>
+<li><code>spawner.rs</code>：工作线程生命周期管理</li>
+</ul>
+<h4 id="ringbuf-"><code>ringbuf/</code> - 环形缓冲区抽象</h4>
+<p>通用描述符环形缓冲区管理（注：抽象设计可能需要改进）：</p>
+<ul>
+<li><code>desc.rs</code>：描述符序列化/反序列化 trait 定义</li>
+<li><code>dma_rb.rs</code>：基于 DMA 的环形缓冲区实现，使用头尾指针进行生产者-消费者同步</li>
+</ul>
+<h4 id="_4">支持模块</h4>
+<ul>
+<li><code>config.rs</code>：设备配置加载器（从 <code>/etc/bluerdma/config.toml</code> 读取）</li>
+<li><code>constants.rs</code>：全局常量和硬件地址定义</li>
+<li><code>memory_proxy_simple.rs</code>：仿真模式 DMA 访问的内存代理 TCP 服务器</li>
+</ul>
+<h2 id="_5">运行模式</h2>
+<h3 id="-features-hw">硬件模式 (<code>--features hw</code>)</h3>
+<p>生产环境使用物理 RDMA 硬件：</p>
+<ul>
+<li><strong>CSR 访问</strong>：通过 <code>/dev/mem</code>（SysfsPci）或 VFIO 进行直接 PCIe MMIO 访问</li>
+<li><strong>设备类型</strong>：<code>PciHwDevice</code>（使用 <code>pci-driver</code> crate）</li>
+<li><strong>地址转换</strong>：通过 <code>/proc/self/pagemap</code> 读取 Linux 页表获取物理地址</li>
+<li><strong>网络接口</strong>：通过 TAP 设备集成真实网络栈</li>
+<li><strong>内存管理</strong>：使用 <code>mlock()</code> 锁定 DMA 缓冲区防止换页</li>
+</ul>
+<h3 id="-features-sim">仿真模式 (<code>--features sim</code>)</h3>
+<p>与 RTL 仿真器协同进行硬件验证：</p>
+<ul>
+<li><strong>CSR 访问</strong>：通过 UDP RPC 与仿真器通信（端口 7701/7702）</li>
+<li><strong>设备类型</strong>：<code>EmulatedHwDevice</code>（基于 UDP 通信）</li>
+<li><strong>地址转换</strong>：</li>
+<li>MR（Memory Region）：使用 <code>/proc/self/pagemap</code> 获取真实物理地址</li>
+<li>Ringbuf：直接使用虚拟地址作为"物理地址"传递给仿真器</li>
+<li>PA↔VA 映射表：用于仿真器通过内存代理访问主机内存</li>
+<li><strong>网络接口</strong>：通过 UDP 与仿真器交换数据包</li>
+<li><strong>内存代理</strong>：TCP 服务器（端口 7003/7004），使仿真器能直接访问主机 DMA 内存</li>
+</ul>
+<h3 id="mock-features-mock">Mock 模式 (<code>--features mock</code>)</h3>
+<p>纯软件模拟，用于单元测试和 CI/CD：</p>
+<ul>
+<li><strong>设备类型</strong>：<code>MockDeviceCtx</code>（内存模拟实现）</li>
+<li><strong>地址转换</strong>：软件模拟，无需真实物理地址</li>
+<li><strong>特点</strong>：无需物理硬件或仿真器，启动快速，适合自动化测试</li>
+</ul>
+<h2 id="_6">关键架构</h2>
+<h3 id="_7">环形缓冲区系统</h3>
+<p>驱动采用类型安全的环形缓冲区架构，在编译时保证方向正确性：</p>
+<ul>
+<li><strong>类型安全方向</strong>：<code>RingSpecToCard</code>（驱动写入）提供 WriterOps，<code>RingSpecToHost</code>（硬件写入）提供 ReaderOps</li>
+<li><strong>环形队列类型</strong>：SendRing、MetaReportRing、CmdReqRing、CmdRespRing、SimpleNicTxRing、SimpleNicRxRing</li>
+<li><strong>同步机制</strong>：通过硬件 CSR 寄存器管理 head/tail 指针，实现无锁生产者-消费者模式</li>
+<li><strong>泛型抽象</strong>：<code>Ring&lt;Dev, Spec&gt;</code> 为所有环形队列提供统一的类型安全接口</li>
+</ul>
+<h3 id="_8">内存管理</h3>
+<p>不同模式采用不同的内存管理策略：</p>
+<p><strong>硬件模式</strong>：</p>
+<ul>
+<li>使用 <code>/proc/self/pagemap</code> 读取 Linux 页表获取物理地址</li>
+<li>使用 <code>mlock()</code> 锁定 DMA 缓冲区防止换页</li>
+<li>注：对于 GPU 内存以及 GPU 驱动管理的主机内存，物理地址获取和锁定机制可能不适用</li>
+</ul>
+<p><strong>仿真模式</strong>：</p>
+<ul>
+<li>MR（Memory Region）：使用 <code>/proc/self/pagemap</code> 获取真实物理地址</li>
+<li>Ringbuf：直接使用虚拟地址假装为物理地址，简化仿真器实现</li>
+<li>PA↔VA 映射表：维护双向映射，供内存代理服务器使用，使仿真器能通过物理地址访问主机内存</li>
+</ul>
+<p><strong>通用特性</strong>：</p>
+<ul>
+<li>DMA 缓冲区需要物理连续内存，并且物理地址已知</li>
+<li>支持 4KB 和 2MB 大页（通过 features 在编译时选择，默认 2MB，但只能选择一种，之后可能需要修改）</li>
+</ul>
+<h3 id="ffi">FFI 集成</h3>
+<p>驱动通过 FFI 与 libibverbs C 框架集成：</p>
+<p><strong>导出函数示例</strong>：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_init&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="c1">// 全局初始化</span>
+
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_new&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="n">sysfs_name</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">c_char</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">c_void</span><span class="w"> </span><span class="c1">// 设备创建</span>
+</code></pre></div>
+<p><strong>集成机制</strong>：</p>
+<ul>
+<li>C 提供者层（provider）通过 <code>dlopen()</code> 动态加载 Rust 驱动的共享库</li>
+<li>实现标准的 libibverbs 提供者接口，对上层应用透明</li>
+<li>所有导出函数使用 <code>extern "C"</code> ABI 保证 C 兼容性</li>
+</ul>
+<h2 id="_9">组件架构与集成</h2>
+<p>Blue RDMA 驱动采用分层架构设计，由内核模块、用户态 Rust 驱动、C Provider 层和标准 libibverbs 库协同工作。</p>
+<h3 id="_10">架构概述</h3>
+<p>整个系统采用用户态-内核态混合架构：</p>
+<div class="highlight"><pre><span></span><code>用户态                                           内核态
+────────────────────────────────────────────────────────────────────────
+
+┌─────────────────────────────────────┐
+│   应用程序 (perftest, MPI, etc.)     │
+│   - 使用标准 libibverbs API         │
+└─────────────────────────────────────┘
+            │ ibv_*() 调用
+            ▼
+┌─────────────────────────────────────┐       ┌─────────────────────────┐
+│ libibverbs + C Provider             │       │ Kernel Driver           │
+│ (libibverbs.so + 静态链接 provider) │       │ (bluerdma.ko)           │
+│                                     │       │ + ib_uverbs.ko          │
+│ ├─ libibverbs 核心  ────────────[1]────────&gt;├─────────────────────────┤
+│ │  - 标准 IB Verbs API              │ sysfs │ - 注册 IB 设备          │
+│ │  - 设备发现和管理 &lt;────────────[2]────────│ - 处理 ioctl/write      │
+│ │                                   │ ioctl │ - GID 管理              │
+│ └─ Blue RDMA Provider               │       └─────────────────────────┘
+│    (providers/bluerdma/)            │
+│    - 编译时静态链接                  │
+│    - bluerdma_device_alloc()        │
+└─────────────────────────────────────┘
+            │ dlopen(&quot;libbluerdma_rust.so&quot;)
+            │ (唯一的动态加载)
+            ▼
+┌─────────────────────────────────────┐
+│ Rust Driver (rust-driver)           │
+│ - 核心业务逻辑实现                   │
+│ - 硬件资源管理                       │
+│ - 后台工作线程                       │
+└─────────────────────────────────────┘
+            │ PCIe MMIO / UDP / Mock
+            ▼
+┌─────────────────────────────────────┐
+│ Hardware / Simulator / Mock         │
+│ - Blue RDMA 网卡                     │
+│ - RTL 仿真器                         │
+│ - 软件模拟                           │
+└─────────────────────────────────────┘
+
+通信通道说明：
+[1] 设备发现：/sys/class/infiniband_verbs/uverbs*
+    - libibverbs 扫描此目录发现设备
+    - 读取 dev 属性获取设备号
+
+[2] 设备通信：/dev/infiniband/uverbs*
+    - ibv_open_device() 时打开字符设备
+    - ioctl/write 系统调用与内核通信
+</code></pre></div>
+<h3 id="_11">各组件职责</h3>
+<h4 id="1-kernel-driver-bluerdmako">1. kernel-driver (bluerdma.ko)</h4>
+<p><strong>位置</strong>: <code>blue-rdma-driver/kernel-driver/</code>
+<strong>编译产物</strong>: <code>bluerdma.ko</code></p>
+<p><strong>主要职责</strong>：</p>
+<ul>
+<li>注册 IB 设备到内核 RDMA 子系统（<code>ib_register_device</code>）</li>
+<li>创建字符设备 <code>/dev/infiniband/uverbs*</code>（用于 ioctl 通信）</li>
+<li>创建 sysfs 接口：</li>
+<li><code>/sys/class/infiniband/bluerdma*</code>（IB 设备信息）</li>
+<li><code>/sys/class/infiniband_verbs/uverbs*</code>（设备发现入口，被 libibverbs 扫描）</li>
+<li>创建和管理网络设备（blue0、blue1）</li>
+<li>处理 GID（Global Identifier）表管理</li>
+</ul>
+<p><strong>注意</strong>：当前内核驱动的 verbs 方法多为桩函数（仅打印日志），实际业务逻辑在用户态 Rust 驱动中实现。</p>
+<p><strong>设备发现与访问流程</strong>：</p>
+<ol>
+<li>libibverbs 扫描 <code>/sys/class/infiniband_verbs/</code> 发现设备（如 <code>uverbs0</code>）</li>
+<li>读取 <code>/sys/class/infiniband_verbs/uverbs0/dev</code> 获取设备号（如 <code>231:0</code>）</li>
+<li>打开字符设备 <code>/dev/infiniband/uverbs0</code> 进行 ioctl 通信（在仿真中目前用不到）</li>
+</ol>
+<p><strong>关键代码</strong>（<code>main.c</code>）：</p>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">bluerdma_ib_device_add</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">pci_dev</span><span class="w"> </span><span class="o">*</span><span class="n">pdev</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// 分配 IB 设备结构</span>
+<span class="w">    </span><span class="n">dev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ib_alloc_device</span><span class="p">(</span><span class="n">bluerdma_dev</span><span class="p">,</span><span class="w"> </span><span class="n">ibdev</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 设置设备操作表</span>
+<span class="w">    </span><span class="n">ib_set_device_ops</span><span class="p">(</span><span class="n">ibdev</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bluerdma_device_ops</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 注册到内核 RDMA 子系统</span>
+<span class="w">    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ib_register_device</span><span class="p">(</span><span class="n">ibdev</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 关联网络设备</span>
+<span class="w">    </span><span class="n">ib_device_set_netdev</span><span class="p">(</span><span class="n">ibdev</span><span class="p">,</span><span class="w"> </span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">netdev</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="2-libibverbs-c-provider-rdma-core-550">2. libibverbs + C Provider (rdma-core-55.0)</h4>
+<p><strong>位置</strong>: <code>blue-rdma-driver/dtld-ibverbs/rdma-core-55.0/</code>
+<strong>编译产物</strong>: <code>libibverbs.so</code> 及相关库</p>
+<p><strong>组成部分</strong>：</p>
+<ul>
+<li><strong>libibverbs 核心</strong>：标准 RDMA verbs API 实现</li>
+<li><strong>Blue RDMA Provider</strong>：<code>providers/bluerdma/</code> 目录，编译时静态链接到 rdma-core</li>
+</ul>
+<p><strong>主要职责</strong>：</p>
+<ul>
+<li>提供标准的 libibverbs API 给应用程序</li>
+<li>扫描 <code>/sys/class/infiniband_verbs/</code> 发现 RDMA 设备</li>
+<li>打开 <code>/dev/infiniband/uverbs*</code> 字符设备进行通信</li>
+<li>Blue RDMA Provider 负责动态加载 Rust 驱动库</li>
+</ul>
+<p><strong>注意</strong>：这是上游 rdma-core 的修改版本，Blue RDMA 的 provider 代码已集成到源码树中，编译时一起构建，<strong>不是</strong>运行时动态加载的插件。</p>
+<p><strong>关键函数调用</strong>（<code>init.c</code> 和 <code>device.c</code>）：</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// device.c:73 - 获取设备列表</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">ibv_device</span><span class="w"> </span><span class="o">**</span><span class="n">ibverbs_get_device_list</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">num_devices</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ibverbs_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">drivers_list</span><span class="p">,</span><span class="w"> </span><span class="n">num_devices</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// init.c:204-238 - 扫描 sysfs 发现设备</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">find_sysfs_devs</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">list_head</span><span class="w"> </span><span class="o">*</span><span class="n">tmp_sysfs_dev_list</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 构造路径: /sys/class/infiniband_verbs</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">check_snprintf</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">class_path</span><span class="p">),</span>
+<span class="w">                        </span><span class="s">&quot;%s/class/infiniband_verbs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ibv_get_sysfs_path</span><span class="p">()))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ENOMEM</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">class_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opendir</span><span class="p">(</span><span class="n">class_path</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// 遍历 uverbs0, uverbs1 等设备</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">dent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readdir</span><span class="p">(</span><span class="n">class_dir</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">setup_sysfs_dev</span><span class="p">(</span><span class="n">dirfd</span><span class="p">(</span><span class="n">class_dir</span><span class="p">),</span><span class="w"> </span><span class="n">dent</span><span class="o">-&gt;</span><span class="n">d_name</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// device.c:335 - 打开字符设备</span>
+<span class="n">cmd_fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open_cdev</span><span class="p">(</span><span class="n">verbs_device</span><span class="o">-&gt;</span><span class="n">sysfs</span><span class="o">-&gt;</span><span class="n">sysfs_name</span><span class="p">,</span><span class="w">  </span><span class="c1">// &quot;uverbs0&quot;</span>
+<span class="w">                   </span><span class="n">verbs_device</span><span class="o">-&gt;</span><span class="n">sysfs</span><span class="o">-&gt;</span><span class="n">sysfs_cdev</span><span class="p">);</span><span class="w">   </span><span class="c1">// 设备号</span>
+
+<span class="c1">// open_cdev.c:134-146 - 实际打开 /dev/infiniband/uverbs*</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">open_cdev</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">devname_hint</span><span class="p">,</span><span class="w"> </span><span class="kt">dev_t</span><span class="w"> </span><span class="n">cdev</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 构造路径: /dev/infiniband/uverbs0</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">asprintf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">devpath</span><span class="p">,</span><span class="w"> </span><span class="n">RDMA_CDEV_DIR</span><span class="w"> </span><span class="s">&quot;/%s&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">devname_hint</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open_cdev_internal</span><span class="p">(</span><span class="n">devpath</span><span class="p">,</span><span class="w"> </span><span class="n">cdev</span><span class="p">);</span><span class="w">  </span><span class="c1">// open(&quot;/dev/infiniband/uverbs0&quot;, ...)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fd</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="3-blue-rdma-provider-c">3. Blue RDMA Provider (C 层桥接)</h4>
+<p><strong>位置</strong>: <code>blue-rdma-driver/dtld-ibverbs/rdma-core-55.0/providers/bluerdma/</code>
+<strong>核心文件</strong>: <code>bluerdma.c</code>
+<strong>编译方式</strong>: 编译时静态链接到 libibverbs</p>
+<p><strong>主要职责</strong>：</p>
+<ul>
+<li>实现 provider 接口，响应设备分配请求</li>
+<li><strong>动态加载 Rust 驱动库</strong>（<code>libbluerdma_rust.so</code>）—— 系统中唯一的 <code>dlopen</code> 调用</li>
+<li>提供 C ABI 接口桥接，将 libibverbs 调用转发给 Rust 驱动</li>
+<li>处理设备初始化和上下文分配</li>
+</ul>
+<p><strong>关键代码</strong>（<code>bluerdma.c:393-467</code>）：</p>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">verbs_device</span><span class="w"> </span><span class="o">*</span>
+<span class="n">bluerdma_device_alloc</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">verbs_sysfs_dev</span><span class="w"> </span><span class="o">*</span><span class="n">sysfs_dev</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">bluerdma_device</span><span class="w"> </span><span class="o">*</span><span class="n">dev</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">dl_handler</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">driver_new</span><span class="p">)(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">driver_init</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 动态加载 Rust 驱动库（系统唯一的 dlopen 调用）</span>
+<span class="w">    </span><span class="n">dl_handler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlopen</span><span class="p">(</span><span class="s">&quot;libbluerdma_rust.so&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">RTLD_NOW</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">dl_handler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;dlopen failed: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dlerror</span><span class="p">());</span>
+<span class="w">        </span><span class="k">goto</span><span class="w"> </span><span class="n">err_dev</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// 获取 Rust 导出的函数指针</span>
+<span class="w">    </span><span class="n">driver_init</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_init&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">driver_new</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_new&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 调用 Rust 的初始化函数</span>
+<span class="w">    </span><span class="n">driver_init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 动态加载所有 verbs 操作</span>
+<span class="w">    </span><span class="n">bluerdma_set_ops</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="n">ops</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">ibv_dev</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 动态设置所有 verbs 操作</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">bluerdma_set_ops</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">verbs_context_ops</span><span class="w"> </span><span class="o">*</span><span class="n">ops</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 从 Rust 库加载每个操作的函数指针</span>
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_alloc_pd&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">alloc_pd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fn</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_reg_mr&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">reg_mr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fn</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_create_qp&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">create_qp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fn</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_post_send&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">post_send</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fn</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handler</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bluerdma_poll_cq&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">poll_cq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fn</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// ... 其他 verbs 操作</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Provider 注册</strong>：</p>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">verbs_device_ops</span><span class="w"> </span><span class="n">bluerdma_dev_ops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bluerdma&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">match_min_abi_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">match_max_abi_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">alloc_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bluerdma_device_alloc</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">alloc_context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bluerdma_alloc_context</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="c1">// 使用宏自动注册 provider（在 dlopen 时执行）</span>
+<span class="n">PROVIDER_DRIVER</span><span class="p">(</span><span class="n">bluerdma</span><span class="p">,</span><span class="w"> </span><span class="n">bluerdma_dev_ops</span><span class="p">);</span>
+</code></pre></div>
+<h4 id="4-rust-driver">4. rust-driver (核心驱动)</h4>
+<p><strong>位置</strong>: <code>blue-rdma-driver/rust-driver/</code>
+<strong>编译产物</strong>: <code>libbluerdma_rust.so</code></p>
+<p><strong>主要职责</strong>：</p>
+<ul>
+<li>实现所有 RDMA verbs 操作的核心业务逻辑</li>
+<li>管理硬件资源（QP、CQ、MR、PD 等）</li>
+<li>处理内存注册和地址转换</li>
+<li>管理 DMA 缓冲区和环形队列</li>
+<li>运行后台工作线程（发送、重传、完成处理等）</li>
+<li>通过 CSR 与硬件通信（或通过 UDP 与仿真器通信）</li>
+</ul>
+<p><strong>FFI 导出</strong>（<code>src/rxe/ctx_ops.rs</code>）：</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 全局初始化</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_init&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">env_logger</span><span class="p">::</span><span class="n">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">format_timestamp</span><span class="p">(</span><span class="nb">Some</span><span class="p">(</span><span class="n">env_logger</span><span class="p">::</span><span class="n">TimestampPrecision</span><span class="p">::</span><span class="n">Nanos</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="n">try_init</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// 创建设备上下文</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_new&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="n">sysfs_name</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">c_char</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">c_void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">BlueRdmaCore</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">sysfs_name</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 分配 Protection Domain</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_alloc_pd&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">alloc_pd</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_context</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_pd</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">BlueRdmaCore</span><span class="p">::</span><span class="n">alloc_pd</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 注册 Memory Region</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_reg_mr&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">reg_mr</span><span class="p">(</span>
+<span class="w">    </span><span class="n">pd</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_pd</span><span class="p">,</span>
+<span class="w">    </span><span class="n">addr</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">c_void</span><span class="p">,</span>
+<span class="w">    </span><span class="n">length</span><span class="p">:</span><span class="w"> </span><span class="kt">usize</span><span class="p">,</span>
+<span class="w">    </span><span class="n">access</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_mr</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">BlueRdmaCore</span><span class="p">::</span><span class="n">reg_mr</span><span class="p">(</span><span class="n">pd</span><span class="p">,</span><span class="w"> </span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="n">access</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 创建 Queue Pair</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_create_qp&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">create_qp</span><span class="p">(</span>
+<span class="w">    </span><span class="n">pd</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_pd</span><span class="p">,</span>
+<span class="w">    </span><span class="n">init_attr</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_qp_init_attr</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_qp</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">BlueRdmaCore</span><span class="p">::</span><span class="n">create_qp</span><span class="p">(</span><span class="n">pd</span><span class="p">,</span><span class="w"> </span><span class="n">init_attr</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 投递发送请求</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_post_send&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">post_send</span><span class="p">(</span>
+<span class="w">    </span><span class="n">qp</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_qp</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wr</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_send_wr</span><span class="p">,</span>
+<span class="w">    </span><span class="n">bad_wr</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_send_wr</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">c_int</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">BlueRdmaCore</span><span class="p">::</span><span class="n">post_send</span><span class="p">(</span><span class="n">qp</span><span class="p">,</span><span class="w"> </span><span class="n">wr</span><span class="p">,</span><span class="w"> </span><span class="n">bad_wr</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 轮询完成队列</span>
+<span class="cp">#[unsafe(export_name = </span><span class="s">&quot;bluerdma_poll_cq&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">poll_cq</span><span class="p">(</span>
+<span class="w">    </span><span class="n">cq</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_cq</span><span class="p">,</span>
+<span class="w">    </span><span class="n">num_entries</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wc</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">ffi</span><span class="p">::</span><span class="n">ibv_wc</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">BlueRdmaCore</span><span class="p">::</span><span class="n">poll_cq</span><span class="p">(</span><span class="n">cq</span><span class="p">,</span><span class="w"> </span><span class="n">num_entries</span><span class="p">,</span><span class="w"> </span><span class="n">wc</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="_12">完整调用链路</h3>
+<p>以 <code>ibv_post_send()</code> 为例，展示从应用到硬件的完整调用链：</p>
+<div class="highlight"><pre><span></span><code>应用程序
+    │
+    ├─ ibv_post_send(qp, wr, bad_wr)
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│ libibverbs                              │
+│   verbs_post_send()                     │
+│     └─&gt; ctx-&gt;ops-&gt;post_send()           │
+└─────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│ C Provider (bluerdma.c)                 │
+│   ops-&gt;post_send = bluerdma_post_send   │
+│     └─&gt; 直接转发到 Rust                 │
+└─────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│ Rust Driver                             │
+│   bluerdma_post_send()                  │
+│     └─&gt; BlueRdmaCore::post_send()       │
+│           └─&gt; HwDeviceCtx::post_send()  │
+│                 ├─ 解析 SendWr           │
+│                 ├─ 生成硬件描述符        │
+│                 ├─ 写入 Send Ring        │
+│                 └─ 通知 SendWorker       │
+└─────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│ SendWorker (后台线程)                    │
+│   ├─ 从 Ring Buffer 读取描述符           │
+│   ├─ DMA 读取用户数据                    │
+│   ├─ 更新硬件 CSR (tail pointer)         │
+│   └─ 注册超时检测                        │
+└─────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│ Hardware / Simulator                    │
+│   ├─ 读取描述符                          │
+│   ├─ DMA 读取数据                        │
+│   ├─ 封装网络包                          │
+│   └─ 通过以太网发送                      │
+└─────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="_13">初始化流程</h3>
+<p><strong>阶段 1：内核模块加载</strong></p>
+<div class="highlight"><pre><span></span><code>insmod<span class="w"> </span>bluerdma.ko
+</code></pre></div>
+<ol>
+<li><code>bluerdma_init_module()</code> 执行</li>
+<li><code>bluerdma_probe()</code> 创建测试设备</li>
+<li><code>bluerdma_ib_device_add()</code> 注册 IB 设备</li>
+<li>创建 sysfs 接口：</li>
+<li><code>/sys/class/infiniband/bluerdma0</code>（IB 设备信息）</li>
+<li><code>/sys/class/infiniband_verbs/uverbs0</code>（libibverbs 扫描此目录）</li>
+<li>创建字符设备 <code>/dev/infiniband/uverbs0</code></li>
+<li>创建网络设备 <code>blue0</code>、<code>blue1</code></li>
+</ol>
+<p><strong>阶段 2：应用打开设备</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">ibv_device</span><span class="w"> </span><span class="o">**</span><span class="n">dev_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ibv_get_device_list</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">ibv_context</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ibv_open_device</span><span class="p">(</span><span class="n">dev_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</code></pre></div>
+<p>详细调用链：</p>
+<ol>
+<li><strong>应用层</strong>：<code>ibv_get_device_list()</code></li>
+<li><strong>libibverbs</strong> (<code>device.c:73</code>)：<code>ibverbs_get_device_list()</code></li>
+<li><strong>libibverbs</strong> (<code>init.c:560</code>)：<code>find_sysfs_devs()</code></li>
+<li>扫描 <code>/sys/class/infiniband_verbs/uverbs*</code></li>
+<li>注意：扫描的是 <code>infiniband_verbs</code> 而不是 <code>infiniband</code></li>
+<li><strong>libibverbs</strong> (<code>init.c:541</code>)：<code>try_drivers()</code> 匹配 provider</li>
+<li><strong>C Provider</strong> (<code>bluerdma.c:393</code>)：<code>bluerdma_device_alloc()</code></li>
+<li>动态加载 Rust 驱动库</li>
+<li><strong>C Provider</strong> (<code>bluerdma.c:407</code>)：<code>dlopen("libbluerdma_rust.so")</code></li>
+<li><strong>C Provider</strong> (<code>bluerdma.c:422</code>)：调用 <code>bluerdma_init()</code> [Rust FFI]</li>
+<li><strong>C Provider</strong> (<code>bluerdma.c:359</code>)：调用 <code>bluerdma_new("uverbs0")</code> [Rust FFI]</li>
+<li><strong>Rust Driver</strong> (<code>core.rs:81</code>)：<code>BlueRdmaCore::new()</code></li>
+<li>初始化硬件适配器（PCIe/UDP/Mock）</li>
+<li>例如 sim 模式：连接 UDP <code>127.0.0.1:7701</code></li>
+<li><strong>Rust Driver</strong>：<code>HwDeviceCtx::initialize()</code><ul>
+<li>分配 DMA 缓冲区和环形队列</li>
+<li>启动后台工作线程</li>
+<li>初始化资源管理器（QP/CQ/MR/PD）</li>
+</ul>
+</li>
+</ol>
+<p><strong>阶段 3：运行时后台线程</strong>
+以下工作线程在后台持续运行：</p>
+<ul>
+<li><code>SendWorker</code>: 处理发送队列</li>
+<li><code>RdmaWriteWorker</code>: 处理 RDMA Write 操作</li>
+<li><code>CompletionWorker</code>: 处理完成事件</li>
+<li><code>PacketRetransmitWorker</code>: 超时重传</li>
+<li><code>AckResponder</code>: 生成和发送 ACK</li>
+<li><code>QpAckTimeoutWorker</code>: 检测 ACK 超时</li>
+<li><code>MetaReportWorker</code>: 从硬件读取元数据报告</li>
+</ul>
+<h3 id="_14">关键设计特点</h3>
+<p><strong>1. 混合架构</strong></p>
+<ul>
+<li>内核层：提供设备框架和字符设备接口</li>
+<li>用户态层：实现核心业务逻辑，性能更高，开发更灵活</li>
+</ul>
+<p><strong>2. 单次动态加载</strong></p>
+<ul>
+<li>Blue RDMA Provider 在编译时静态链接到 libibverbs</li>
+<li>运行时仅有一次 <code>dlopen</code>：Provider 加载 Rust 驱动（<code>libbluerdma_rust.so</code>）</li>
+</ul>
+<p><strong>3. 零拷贝数据路径</strong></p>
+<ul>
+<li>应用数据直接通过 DMA 传输到硬件</li>
+<li>使用环形缓冲区（Ring Buffer）实现无锁通信</li>
+<li>后台线程异步处理，不阻塞应用</li>
+</ul>
+<p><strong>4. 多模式支持</strong></p>
+<ul>
+<li>硬件模式：PCIe MMIO 访问真实网卡</li>
+<li>仿真模式：UDP 与 RTL 仿真器通信（端口 7701/7702）</li>
+<li>Mock 模式：纯软件模拟，用于 CI/CD</li>
+</ul>
+<p><strong>5. TCP 辅助通道</strong>
+对于 Send/Recv 语义，使用 TCP 连接在 QP 对之间传递 <code>post_recv</code> 信息，使发送端能匹配接收缓冲区。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../../open-rdma-operation-manual_EN/3.%20ftile-debug-guide/FTile-Debug-and-SystemConsole-Guide_EN/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ftile-debug-guide">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                ftile-debug-guide
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../rtl-simulation/" class="md-footer__link md-footer__link--next" aria-label="Next: 仿真环境准备">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                仿真环境准备
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 open-rdma
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "header.autohide", "search.suggest", "search.highlight", "content.tabs.link", "navigation.instant", "navigation.tracking", "content.code.annotate", "toc.integrate", "toc.follow", "navigation.path", "navigation.top", "navigation.footer", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
