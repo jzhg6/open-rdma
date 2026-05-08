@@ -26,7 +26,7 @@ nav:
 theme:
   name: material
   features:
-    - navigation.tabs        # 顶层导航使用标签页
+    # - navigation.tabs        # 顶层导航使用标签页
     - navigation.indexes
     - navigation.sections      # 将导航项分组为章节
     - header.autohide          # 向下滚动时自动隐藏头部
