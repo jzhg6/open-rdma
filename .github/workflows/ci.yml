@@ -1,0 +1,45 @@
+name: CI 自动部署文档站点
+
+on:
+  push:
+    branches:
+      - docs/update-entry
+  workflow_dispatch:   # 允许在 GitHub 网页上手动触发
+
+# 赋予工作流写入权限，以便后续推送构建结果
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # 获取全部历史，某些插件可能需要
+
+      - name: 配置 Python 环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 安装依赖
+        run: |
+          pip install mkdocs-material
+          pip install mkdocs-gen-files    # 你之前使用的自动生成目录插件
+          # 如果你还在 requirements.txt 里放了所有依赖，可以用下一行替换上面两行
+          # pip install -r requirements.txt
+
+      - name: 构建站点
+        run: mkdocs build --clean
+        # 这会生成一个 site/ 目录（等同之前的 _site），包含完整静态站点
+
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages   # 自动推送到 gh-pages 分支
+          force_orphan: true         # 保持 gh-pages 分支只有最后一次构建的记录，更干净
