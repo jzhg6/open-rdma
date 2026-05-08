@@ -7,6 +7,7 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - '.github/workflows/**'
+      - 'requirements.txt'
   workflow_dispatch: # 允许在 GitHub 网页上手动触发
 
 # 赋予工作流写入权限，以便后续推送构建结果
