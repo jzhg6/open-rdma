@@ -60,7 +60,7 @@ make
 # 如果 BTF 生成失败（常见于 WSL），可使用：
 # make KBUILD_MODPOST_WARN=1
 
-# 加载驱动模块
+# 加载驱动模块，重启后需要执行这条命令以重新加载驱动
 sudo make install
 ```
 
@@ -273,6 +273,10 @@ cd tests/base_test
 
 # 运行所有测试
 ./scripts/run_all_tests.sh
+
+# 可以通过环境变量 BLUERDMA_SIM_BACKEND 指定 cocotb 使用的仿真后端，支持：iverilog 与 verilator
+# BLUERDMA_SIM_BACKEND=iverilog ./test_loopback_sim.sh 4096
+# 如果未显式设置，默认仿真后端为 verilator。
 ```
 
 

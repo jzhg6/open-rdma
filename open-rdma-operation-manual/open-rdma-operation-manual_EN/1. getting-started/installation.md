@@ -68,7 +68,7 @@ make
 # If BTF generation fails (common on WSL), use:
 # make KBUILD_MODPOST_WARN=1
 
-# Load the driver module
+# Load the driver module. After restarting, you need to execute this command to reload the driver.
 sudo make install
 ```
 
@@ -305,7 +305,15 @@ cd tests/base_test
 
 # Run all tests
 ./scripts/run_all_tests.sh
+
+# The simulation backend used by cocotb can be specified through the environment variable BLUERDMA_SIM_BACKEND. Supported options are: iverilog and verilator. 
+# BLUERDMA_SIM_BACKEND=iverilog ./test_loopback_sim.sh 4096
+# If not explicitly set, the default simulation backend is verilator.
 ```
+
+Example instructions for simulation with iverilog:
+
+![alt text](image.png)
 
 Test logs are automatically saved in the `tests/base_test/log/sim/` directory. You can view detailed test output and RTL simulator logs.
 

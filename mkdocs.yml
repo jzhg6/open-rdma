@@ -7,7 +7,7 @@ copyright: Copyright &copy; 2026 open-rdma # 版权信息
 
 nav:
   - Welcome: index.md
-  - 英文手册:
+  - 英文手册: 
     - getting-started:
       - introduction: open-rdma-operation-manual_EN/1. getting-started/introduction.md
       - rtl-simulation: open-rdma-operation-manual_EN/1. getting-started/rtl-simulation.md
@@ -26,21 +26,22 @@ nav:
 theme:
   name: material
   features:
-    # - navigation.tabs            # 顶层导航使用标签页
+    - navigation.tabs        # 顶层导航使用标签页
+    - navigation.indexes
     - navigation.sections      # 将导航项分组为章节
     - header.autohide          # 向下滚动时自动隐藏头部
-    - search.suggest             # 搜索时提供关键词建议
-    - search.highlight            # 搜索时高亮显示关键词
-    - content.tabs.link           # 允许跨页面同步选项卡状态
-    - navigation.instant        # 即时加载，提升页面切换速度
+    - search.suggest           # 搜索时提供关键词建议
+    - search.highlight         # 搜索时高亮显示关键词
+    - content.tabs.link        # 允许跨页面同步选项卡状态
+    - navigation.instant       # 即时加载，提升页面切换速度
     - navigation.tracking      # 更新URL锚点，方便分享
-    - content.code.annotate # 代码块注释
-    - toc.integrate                # 将目录整合到侧边栏
-    - toc.follow                    # 目录跟随滚动高亮
-    - navigation.path            # 显示导航路径，即面包屑
-    - navigation.top             # 添加返回顶部的按钮
-    - navigation.footer         # 在页面底部显示上一页/下一页按钮
-    - content.code.copy       # 代码块右上角显示复制按钮
+    - content.code.annotate    # 代码块注释
+    - toc.integrate            # 将目录整合到侧边栏
+    - toc.follow               # 目录跟随滚动高亮
+    - navigation.path          # 显示导航路径，即面包屑
+    - navigation.top           # 添加返回顶部的按钮
+    - navigation.footer        # 在页面底部显示上一页/下一页按钮
+    - content.code.copy        # 代码块右上角显示复制按钮
    
   icon:
     repo: fontawesome/brands/github  # 顶部栏的GitHub图标
