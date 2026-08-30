@@ -30,6 +30,24 @@ Whether you are a practitioner or student in hardware (FPGA, ASIC), software inf
 
 </div>
 
+## ⚡ GPU-Friendly Communication and Multipath Transport
+
+OpenRDMA is a GPU-friendly RDMA design: the GPU submits only a short instruction, the NIC builds the full request, and data is transferred through the Multipath Reliable Connection (MRC) protocol. The figure below compares how OpenRDMA and existing RDMA solutions submit communication requests:
+
+- **GPUDirect RDMA (GDR), orange path:** The CPU builds and submits the request.
+- **InfiniBand GPUDirect Async (IBGDA), blue path:** The GPU builds and submits the request.
+- **OpenRDMA, dark-blue path:** The GPU sends only a **minimal 8-byte Doorbell** to select a preconfigured operation; the NIC parses it and builds the full request.
+
+<div align="center">
+<a href="assets/openrdma-control-path-comparison.svg">
+  <img src="assets/openrdma-control-path-comparison.svg" width="100%" alt="GDR, IBGDA, and OpenRDMA control paths for submitting a communication request">
+</a>
+
+<sub>GDR, IBGDA, and OpenRDMA control paths for submitting communication requests</sub>
+</div>
+
+**Multipath Reliable Connection (MRC)** is an open network protocol jointly developed by OpenAI, AMD, Broadcom, Microsoft, and NVIDIA. It allows packets from the same QP to use multiple Ethernet paths and handles out-of-order delivery, loss recovery, congestion, and path failures. OpenRDMA draws on these mechanisms to provide reliable multipath transport.
+
 <table align="center">
 <tr>
 <td style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px;border-radius:10px">
@@ -55,6 +73,7 @@ Whether you are a practitioner or student in hardware (FPGA, ASIC), software inf
 
 <div>
 
+* **[2026-08-31] [Open-RDMA Project Surpasses 350 Stars](https://emanuelef.github.io/daily-stars-explorer/#/open-rdma/open-rdma)**
 * **[2026-05-20] [Open-RDMA Project Surpasses 250 Stars](https://emanuelef.github.io/daily-stars-explorer/#/open-rdma/open-rdma)**
 * **[2026-05-07] [Weekly Report #18 Released](https://github.com/open-rdma/open-rdma-driver/blob/dev/docs/zh-CN/records/weekly-report/2026-05-07.md)**
 * **[2026-04-09] [Weekly Report #14 Released](https://github.com/open-rdma/open-rdma-driver/blob/dev/docs/zh-CN/records/weekly-report/2026-04-09.md)**
@@ -80,7 +99,7 @@ From RTL hardware design to Linux user-space drivers, every line of code is tran
 <td width="50%">
 
 ### ⚡ High Performance
-Inspired by RoCE v2 protocol, Ethernet-based with hardware-software co-design for ultra-low latency
+Inspired by the MRC protocol, Ethernet-based with hardware-software co-design for ultra-low latency
 
 </td>
 </tr>
