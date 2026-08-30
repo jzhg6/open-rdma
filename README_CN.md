@@ -30,6 +30,24 @@
 
 </div>
 
+## ⚡ GPU-Friendly 通信与多路径传输
+
+OpenRDMA 是一种 GPU-friendly 的 RDMA 设计：GPU 只提交一条简短指令，由网卡生成完整请求，并通过多路径可靠传输协议（MRC）完成数据传输。下图为 OpenRDMA 与现有 RDMA 方案中通信请求提交方式的对比：
+
+- **GPUDirect RDMA（GDR） 橙色路径：** CPU 构造并提交请求。
+- **InfiniBand GPUDirect Async（IBGDA）蓝色路径：** GPU 构造并提交请求。
+- **OpenRDMA 深蓝色路径：** GPU 发送一个**极简 8-byte Doorbell** 来选择预配置操作；NIC 解析后生成完整请求。
+
+<div align="center">
+<a href="assets/openrdma-control-path-comparison.svg">
+  <img src="assets/openrdma-control-path-comparison.svg" width="100%" alt="GDR、IBGDA 与 OpenRDMA 在提交通信请求时的控制路径对比">
+</a>
+
+<sub>GDR、IBGDA 与 OpenRDMA 在提交通信请求时的控制路径对比</sub>
+</div>
+
+**Multipath Reliable Connection（MRC）** 是由 OpenAI、AMD、Broadcom、Microsoft 和 NVIDIA 联合开发的开放网络协议，能够让同一 QP 的 packet 使用多条 Ethernet 路径，并处理乱序、丢包恢复、拥塞与路径故障。OpenRDMA 借鉴这些机制来实现可靠的多路径传输。
+
 <table align="center">
 <tr>
 <td style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px;border-radius:10px">
@@ -54,6 +72,7 @@
 
 <div>
 
+* **[2026-08-31] [open-rdma项目Star数量突破350](https://emanuelef.github.io/daily-stars-explorer/#/open-rdma/open-rdma)**
 * **[2026-05-20] [open-rdma项目Star数量突破250](https://emanuelef.github.io/daily-stars-explorer/#/open-rdma/open-rdma)**
 * **[2026-05-07] [开源周报第18期发布](https://github.com/open-rdma/open-rdma-driver/blob/dev/docs/zh-CN/records/weekly-report/2026-05-07.md)**
 * **[2026-04-09] [开源周报第14期发布](https://github.com/open-rdma/open-rdma-driver/blob/dev/docs/zh-CN/records/weekly-report/2026-04-09.md)**
@@ -79,7 +98,7 @@
 <td width="50%">
 
 ### ⚡ 高性能
-受 RoCE v2 协议启发，基于以太网，软硬件协同设计实现极致低延迟
+受 MRC 协议启发，基于以太网，软硬件协同设计实现极致低延迟
 
 </td>
 </tr>
